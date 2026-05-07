@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Večtedenski urnik</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f2f2f2;
+        }
+
+        table {
+            margin: 30px auto;
+            border-collapse: collapse;
+            width: 60%;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #333;
+            padding: 15px;
+        }
+
+        th {
+            background: #4CAF50;
+            color: white;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Moji tedenski urniki</h1>
+
+<div>
+    <button onclick="prejsnji()">⬅ Prejšnji teden</button>
+    <span id="tedenText"></span>
+    <button onclick="naslednji()">Naslednji teden ➡</button>
+</div>
+
+<table>
+    <tr>
+        <th>Dan</th>
+        <th>Pouk</th>
+    </tr>
+    <tbody id="urnik"></tbody>
+</table>
+
+<script>
+let teden = 1;
+
+const urniki = {
+    1: [
+        ["Ponedeljek", "Prosto"],
+        ["Torek", "Prosto"],
+        ["Sreda", "Prosto"],
+        ["Četrtek", "Prosto"],
+        ["Petek", "Računalništvo"],
+        ["Sobota", "Astronomija"],
+        ["Nedelja", "Navadna šola"]
+    ],
+    2: [
+        ["Ponedeljek", "Navadna Šola"],
+        ["Torek", "Prosto"],
+        ["Sreda", "Prosto"],
+        ["Četrtek", "Prosto"],
+        ["Petek", "Astronomija"],
+        ["Sobota", "Astronomija"],
+        ["Nedelja", "Računalništvo"]
+    ],
+    
+};
+
+function prikazi() {
+    document.getElementById("tedenText").innerText = "Teden " + teden;
+
+    let tbody = document.getElementById("urnik");
+    tbody.innerHTML = "";
+
+    urniki[teden].forEach(vrstica => {
+        let row = `<tr><td>${vrstica[0]}</td><td>${vrstica[1]}</td></tr>`;
+        tbody.innerHTML += row;
+    });
+}
+
+function naslednji() {
+    if (teden < Object.keys(urniki).length) {
+        teden++;
+        prikazi();
+    }
+}
+
+function prejsnji() {
+    if (teden > 1) {
+        teden--;
+        prikazi();
+    }
+}
+
+prikazi();
+</script>
+
+</body>
+</html>
