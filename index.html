@@ -47,6 +47,7 @@
 <table>
     <tr>
         <th>Dan</th>
+        <th>Datum</th>
         <th>Pouk</th>
     </tr>
     <tbody id="urnik"></tbody>
@@ -55,12 +56,15 @@
 <script>
 let teden = 1;
 
+// ČETRTEK = 7.5.2026 (referenca)
+const baseDate = new Date(2026, 4, 7); // meseci: 0=jan, 4=maj
+
 const urniki = {
     1: [
         ["Ponedeljek", "Prosto"],
         ["Torek", "Prosto"],
         ["Sreda", "Prosto"],
-        ["Četrtek", "Prosto"],
+        ["Četrtek", "Računalništvo"],
         ["Petek", "Računalništvo"],
         ["Sobota", "Astronomija"],
         ["Nedelja", "Navadna šola"]
@@ -69,13 +73,26 @@ const urniki = {
         ["Ponedeljek", "Navadna Šola"],
         ["Torek", "Prosto"],
         ["Sreda", "Prosto"],
-        ["Četrtek", "Prosto"],
+        ["Četrtek", "Astronomija"],
         ["Petek", "Astronomija"],
-        ["Sobota", "Astronomija"],
+        ["Sobota", "Prosto"],
         ["Nedelja", "Računalništvo"]
-    ],
-    
+    ]
 };
+
+const dneviIndex = {
+    "Ponedeljek": -3,
+    "Torek": -2,
+    "Sreda": -1,
+    "Četrtek": 0,
+    "Petek": 1,
+    "Sobota": 2,
+    "Nedelja": 3
+};
+
+function formatDate(date) {
+    return date.toLocaleDateString("sl-SI");
+}
 
 function prikazi() {
     document.getElementById("tedenText").innerText = "Teden " + teden;
@@ -84,7 +101,20 @@ function prikazi() {
     tbody.innerHTML = "";
 
     urniki[teden].forEach(vrstica => {
-        let row = `<tr><td>${vrstica[0]}</td><td>${vrstica[1]}</td></tr>`;
+        let dan = vrstica[0];
+        let offset = dneviIndex[dan] + (teden - 1) * 7;
+
+        let datum = new Date(baseDate);
+        datum.setDate(baseDate.getDate() + offset);
+
+        let row = `
+            <tr>
+                <td>${dan}</td>
+                <td>${formatDate(datum)}</td>
+                <td>${vrstica[1]}</td>
+            </tr>
+        `;
+
         tbody.innerHTML += row;
     });
 }
