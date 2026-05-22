@@ -1,63 +1,110 @@
 <!DOCTYPE html>
 <html lang="sl">
 <head>
-    <meta charset="UTF-8">
-    <title>Večtedenski urnik</title>
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            background: #f2f2f2;
-        }
+<meta charset="UTF-8">
+<title>Šolski sistem</title>
 
-        table {
-            margin: 30px auto;
-            border-collapse: collapse;
-            width: 60%;
-            background: white;
-        }
+<style>
+    body {
+        font-family: Arial;
+        background: #f2f2f2;
+        margin: 0;
+        padding: 20px;
+    }
 
-        th, td {
-            border: 1px solid #333;
-            padding: 15px;
-        }
+    .container {
+        max-width: 900px;
+        margin: auto;
+    }
 
-        th {
-            background: #4CAF50;
-            color: white;
-        }
+    h1 {
+        text-align: center;
+    }
 
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            cursor: pointer;
-        }
-    </style>
+    button {
+        padding: 10px 20px;
+        margin: 10px;
+        cursor: pointer;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        margin-bottom: 30px;
+    }
+
+    th, td {
+        border: 1px solid #333;
+        padding: 12px;
+        text-align: center;
+    }
+
+    th {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .section {
+        background: white;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+    }
+
+    .event {
+        padding: 10px;
+        margin-bottom: 8px;
+        border-left: 5px solid #4CAF50;
+        background: #f7f7f7;
+    }
+
+    .test {
+        border-left-color: #d9534f;
+    }
+
+    .ustno {
+        border-left-color: #0275d8;
+    }
+
+    .pouk {
+        border-left-color: #5cb85c;
+    }
+</style>
 </head>
+
 <body>
 
-<h1>Moji tedenski urniki</h1>
+<div class="container">
 
-<div>
-    <button onclick="prejsnji()">⬅ Prejšnji teden</button>
+<h1>Šolski sistem</h1>
+
+<div style="text-align:center;">
+    <button onclick="prejsnji()">Prejšnji teden</button>
     <span id="tedenText"></span>
-    <button onclick="naslednji()">Naslednji teden ➡</button>
+    <button onclick="naslednji()">Naslednji teden</button>
 </div>
 
 <table>
     <tr>
         <th>Dan</th>
         <th>Datum</th>
-        <th>Pouk</th>
+        <th>Vsebina</th>
     </tr>
     <tbody id="urnik"></tbody>
 </table>
 
-<script>
-let teden = 1;
+<div class="section">
+    <h2>Vsi prihajajoči dogodki</h2>
+    <div id="dogodki"></div>
+</div>
 
-// ČETRTEK = 7.5.2026 (referenca)
-const baseDate = new Date(2026, 4, 7); // meseci: 0=jan, 4=maj
+</div>
+
+<script>
+
+let teden = 1;
+const baseDate = new Date(2026, 4, 7);
 
 const urniki = {
     1: [
@@ -67,31 +114,31 @@ const urniki = {
         ["Četrtek", "Prosto"],
         ["Petek", "Prosto"],
         ["Sobota", "Prosto"],
-        ["Nedelja", "Računalništvo,Astronomija"]
+        ["Nedelja", "Računalništvo, Astronomija"]
     ],
     2: [
         ["Ponedeljek", "Prosto"],
         ["Torek", "Prosto"],
         ["Sreda", "Prosto"],
-        ["Četrtek", "prosto"],
+        ["Četrtek", "Prosto"],
         ["Petek", "Prosto"],
         ["Sobota", "Prosto"],
         ["Nedelja", "Prosto"]
     ],
-     3: [
+    3: [
         ["Ponedeljek", "Prosto"],
         ["Torek", "Prosto"],
         ["Sreda", "Prosto"],
-        ["Četrtek", "prosto"],
+        ["Četrtek", "Prosto"],
         ["Petek", "Astronomija"],
         ["Sobota", "Računalništvo"],
         ["Nedelja", "Navadna šola"]
     ],
-      4: [
+    4: [
         ["Ponedeljek", "Prosto"],
         ["Torek", "Prosto"],
         ["Sreda", "Prosto"],
-        ["Četrtek", "prosto"],
+        ["Četrtek", "Prosto"],
         ["Petek", "Računalništvo"],
         ["Sobota", "Računalništvo"],
         ["Nedelja", "Navadna šola"]
@@ -108,50 +155,82 @@ const dneviIndex = {
     "Nedelja": 3
 };
 
+const dogodki = [
+    { tip: "test", predmet: "Računalništvo", datum: "29.05.2026" },
+];
+
 function formatDate(date) {
     return date.toLocaleDateString("sl-SI");
 }
 
-function prikazi() {
-    document.getElementById("tedenText").innerText = "Teden " + teden;
+function prikaziUrnik() {
+
+    document.getElementById("tedenText").innerText =
+        "Teden " + teden;
 
     let tbody = document.getElementById("urnik");
     tbody.innerHTML = "";
 
-    urniki[teden].forEach(vrstica => {
-        let dan = vrstica[0];
+    urniki[teden].forEach(v => {
+
+        let dan = v[0];
         let offset = dneviIndex[dan] + (teden - 1) * 7;
 
         let datum = new Date(baseDate);
         datum.setDate(baseDate.getDate() + offset);
 
-        let row = `
+        tbody.innerHTML += `
             <tr>
                 <td>${dan}</td>
                 <td>${formatDate(datum)}</td>
-                <td>${vrstica[1]}</td>
+                <td>${v[1]}</td>
             </tr>
         `;
+    });
+}
 
-        tbody.innerHTML += row;
+function prikaziDogodke() {
+
+    let div = document.getElementById("dogodki");
+    div.innerHTML = "";
+
+    let sortirani = [...dogodki].sort((a, b) =>
+        new Date(a.datum) - new Date(b.datum)
+    );
+
+    sortirani.forEach(d => {
+
+        let className = "event";
+
+        if (d.tip === "test") className += " test";
+        if (d.tip === "ustno") className += " ustno";
+
+        div.innerHTML += `
+            <div class="${className}">
+                <b>${d.tip.toUpperCase()}:</b> ${d.predmet}<br>
+                Datum: ${d.datum}
+            </div>
+        `;
     });
 }
 
 function naslednji() {
     if (teden < Object.keys(urniki).length) {
         teden++;
-        prikazi();
+        prikaziUrnik();
     }
 }
 
 function prejsnji() {
     if (teden > 1) {
         teden--;
-        prikazi();
+        prikaziUrnik();
     }
 }
 
-prikazi();
+prikaziUrnik();
+prikaziDogodke();
+
 </script>
 
 </body>
