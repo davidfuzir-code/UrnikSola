@@ -70,6 +70,10 @@
     .pouk {
         border-left-color: #5cb85c;
     }
+
+    .dopolnilni {
+        border-left-color: #f0ad4e;
+    }
 </style>
 </head>
 
@@ -97,6 +101,11 @@
 <div class="section">
     <h2>Vsi prihajajoče ocene</h2>
     <div id="dogodki"></div>
+</div>
+
+<div class="section">
+    <h2>Dopolnilni pouk</h2>
+    <div id="dopolnilniPouk"></div>
 </div>
 
 </div>
@@ -142,6 +151,15 @@ const urniki = {
         ["Petek", "Računalništvo"],
         ["Sobota", "Računalništvo"],
         ["Nedelja", "Navadna šola"]
+    ],
+    5: [
+        ["Ponedeljek", "Prosto"],
+        ["Torek", "Prosto"],
+        ["Sreda", "Prosto"],
+        ["Četrtek", "Prosto"],
+        ["Petek", "Navadna šola"],
+        ["Sobota", "Astronomija"],
+        ["Nedelja", "Navadna šola"]
     ]
 };
 
@@ -157,6 +175,17 @@ const dneviIndex = {
 
 const dogodki = [
     { tip: "test", predmet: "Računalništvo", datum: "30.05.2026 sobota" },
+];
+
+const dopolnilniPouk = [
+    {
+        predmet: "Računalništvo",
+        datum: "26.05.2026",
+    },
+    {
+        predmet: "Astronomija",
+        datum: "31.05.2026",
+    }
 ];
 
 function formatDate(date) {
@@ -214,6 +243,22 @@ function prikaziDogodke() {
     });
 }
 
+function prikaziDopolnilniPouk() {
+
+    let div = document.getElementById("dopolnilniPouk");
+    div.innerHTML = "";
+
+    dopolnilniPouk.forEach(p => {
+
+        div.innerHTML += `
+            <div class="event dopolnilni">
+                <b>Predmet:</b> ${p.predmet}<br>
+                <b>Datum:</b> ${p.datum}
+            </div>
+        `;
+    });
+}
+
 function naslednji() {
     if (teden < Object.keys(urniki).length) {
         teden++;
@@ -230,6 +275,7 @@ function prejsnji() {
 
 prikaziUrnik();
 prikaziDogodke();
+prikaziDopolnilniPouk();
 
 </script>
 
