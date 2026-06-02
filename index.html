@@ -13,7 +13,7 @@
     }
 
     .container {
-        max-width: 900px;
+        max-width: 1100px;
         margin: auto;
     }
 
@@ -25,6 +25,23 @@
         padding: 10px 20px;
         margin: 10px;
         cursor: pointer;
+    }
+
+    /* Razdelitev na levi in desni del */
+    .glavna-vsebina {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .levi-del {
+        flex: 2;
+        min-width: 300px;
+    }
+
+    .desni-del {
+        flex: 1;
+        min-width: 250px;
     }
 
     table {
@@ -74,6 +91,19 @@
     .dopolnilni {
         border-left-color: #f0ad4e;
     }
+
+    .ocena-box {
+        border-left-color: #9c27b0; /* Vijolična barva za ocene */
+    }
+
+    .ocena-stevilka {
+        float: right;
+        font-weight: bold;
+        background: #9c27b0;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
 </style>
 </head>
 
@@ -83,29 +113,45 @@
 
 <h1>Šolski sistem</h1>
 
-<div style="text-align:center;">
+<div style="text-align:center; margin-bottom: 20px;">
     <button onclick="prejsnji()">Prejšnji teden</button>
     <span id="tedenText"></span>
     <button onclick="naslednji()">Naslednji teden</button>
 </div>
 
-<table>
-    <tr>
-        <th>Dan</th>
-        <th>Datum</th>
-        <th>Vsebina</th>
-    </tr>
-    <tbody id="urnik"></tbody>
-</table>
+<!-- Mreža, ki razdeli stran na dva dela -->
+<div class="glavna-vsebina">
+    
+    <!-- Levi del z urnikom in dogodki -->
+    <div class="levi-del">
+        <table>
+            <tr>
+                <th>Dan</th>
+                <th>Datum</th>
+                <th>Vsebina</th>
+            </tr>
+            <tbody id="urnik"></tbody>
+        </table>
 
-<div class="section">
-    <h2>Vsi prihajajoče ocene</h2>
-    <div id="dogodki"></div>
-</div>
+        <div class="section">
+            <h2>Vsi prihajajoči dogodki</h2>
+            <div id="dogodki"></div>
+        </div>
 
-<div class="section">
-    <h2>Dopolnilni pouk</h2>
-    <div id="dopolnilniPouk"></div>
+        <div class="section">
+            <h2>Dopolnilni pouk</h2>
+            <div id="dopolnilniPouk"></div>
+        </div>
+    </div>
+
+    <!-- Desni del, kjer so prikazane ocene -->
+    <div class="desni-del">
+        <div class="section">
+            <h2>Moje ocene</h2>
+            <div id="prikazOcen"></div>
+        </div>
+    </div>
+
 </div>
 
 </div>
@@ -161,7 +207,7 @@ const urniki = {
         ["Sobota", "Astronomija"],
         ["Nedelja", "Navadna šola"]
     ],
-    5: [
+    6: [
         ["Ponedeljek", "Prosto"],
         ["Torek", "Prosto"],
         ["Sreda", "Prosto"],
@@ -169,6 +215,15 @@ const urniki = {
         ["Petek", "Navadna šola"],
         ["Sobota", "Navadna šola"],
         ["Nedelja", "Prosto"]
+    ],
+    6: [
+        ["Ponedeljek", "Prosto"],
+        ["Torek", "Prosto"],
+        ["Sreda", "Prosto"],
+        ["Četrtek", "Navadna šola"],
+        ["Petek", "Navadna šola"],
+        ["Sobota", "Računalništvo"],
+        ["Nedelja", "Astronomija"]
     ]
 };
 
@@ -183,15 +238,19 @@ const dneviIndex = {
 };
 
 const dogodki = [
-    { tip: "test", predmet: "Računalništvo", datum: "31.05.2026 nedelja" },
+    { tip: "test", predmet: "Astronomija", datum: "19.06.2026 petek" },
 ];
 
 const dopolnilniPouk = [
     {
-            predmet: "Navadna šola",
+        predmet: "Navadna šola",
         datum: "7.06.2026",
     }
- 
+];
+
+// NOVO: Podatki o ocenah, ki jih poljubno dopolnjuješ
+const ocene = [
+    { predmet: "Računalništvo", ocena: 4, datum: "2.06.2026" }
 ];
 
 function formatDate(date) {
@@ -199,15 +258,12 @@ function formatDate(date) {
 }
 
 function prikaziUrnik() {
-
-    document.getElementById("tedenText").innerText =
-        "Teden " + teden;
+    document.getElementById("tedenText").innerText = "Teden " + teden;
 
     let tbody = document.getElementById("urnik");
     tbody.innerHTML = "";
 
     urniki[teden].forEach(v => {
-
         let dan = v[0];
         let offset = dneviIndex[dan] + (teden - 1) * 7;
 
@@ -225,7 +281,6 @@ function prikaziUrnik() {
 }
 
 function prikaziDogodke() {
-
     let div = document.getElementById("dogodki");
     div.innerHTML = "";
 
@@ -234,9 +289,7 @@ function prikaziDogodke() {
     );
 
     sortirani.forEach(d => {
-
         let className = "event";
-
         if (d.tip === "test") className += " test";
         if (d.tip === "ustno") className += " ustno";
 
@@ -250,16 +303,35 @@ function prikaziDogodke() {
 }
 
 function prikaziDopolnilniPouk() {
-
     let div = document.getElementById("dopolnilniPouk");
     div.innerHTML = "";
 
     dopolnilniPouk.forEach(p => {
-
         div.innerHTML += `
             <div class="event dopolnilni">
                 <b>Predmet:</b> ${p.predmet}<br>
                 <b>Datum:</b> ${p.datum}
+            </div>
+        `;
+    });
+}
+
+// NOVO: Funkcija za izpis ocen na desni strani
+function prikaziOcene() {
+    let div = document.getElementById("prikazOcen");
+    div.innerHTML = "";
+
+    if (ocene.length === 0) {
+        div.innerHTML = "<p>Ni še vpisanih ocen.</p>";
+        return;
+    }
+
+    ocene.forEach(o => {
+        div.innerHTML += `
+            <div class="event ocena-box">
+                <span class="ocena-stevilka">${o.ocena}</span>
+                <b>${o.predmet}</b><br>
+                <small>Datum: ${o.datum}</small>
             </div>
         `;
     });
@@ -279,9 +351,11 @@ function prejsnji() {
     }
 }
 
+// Zagon vseh funkcij ob naložitvi strani
 prikaziUrnik();
 prikaziDogodke();
 prikaziDopolnilniPouk();
+prikaziOcene(); // Zažene prikaz ocen
 
 </script>
 
